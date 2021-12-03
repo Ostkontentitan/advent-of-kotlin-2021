@@ -1,12 +1,31 @@
 import java.io.File
 
 fun main(args: Array<String>) {
-    println("Hello World!")
+    println("Happy Kotlin-Advent!")
 
+    val puzzleNumber = args[0].toInt()
     // Try adding program arguments via Run/Debug configuration.
     // Learn more about running applications: https://www.jetbrains.com/help/idea/running-applications.html.
-    println("Program arguments: ${args.joinToString()}")
-    puzzleDayTwoPartTwo()
+    println("Solving Puzzle number: $puzzleNumber")
+    solvePuzzle(puzzleNumber)
+}
+
+fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
+    1 -> {
+        puzzleDayTwoPartOne()
+        puzzleDayTwoPartTwo()
+    }
+    2 -> {
+        puzzleDayTwoPartOne()
+        puzzleDayTwoPartTwo()
+    }
+    3 -> {
+        puzzleDayThreePartOne()
+        puzzleDayThreePartTwo()
+    }
+    else -> {
+        println("Sorry, looks like puzzle number $puzzleNumber is not solved yet. ")
+    }
 }
 
 fun readInput(number: Int): List<String> = readInput("input${number}.txt")
