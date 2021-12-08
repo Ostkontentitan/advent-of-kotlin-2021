@@ -2,7 +2,7 @@ fun puzzleDayEightPartOne() {
     val inputs = readInput(8)
     val structured = structureInputs(inputs)
     val count = structured.countOneFourSevenEight()
-    print("Count of 1,4,7,8 -> $count")
+    println("Count of 1,4,7,8 -> $count")
 }
 
 fun puzzleDayEightPartTwo() {
@@ -11,14 +11,10 @@ fun puzzleDayEightPartTwo() {
     val sum = structured.sumOf { pairsList ->
         val codes = decode(pairsList.first)
         pairsList.second.map {
-            val result = codes[it.toSet()]
-            if(result == null) {
-                throw IllegalArgumentException("Could not find: $it in decoded set. ")
-            }
-            result
+            codes[it.toSet()] ?: throw IllegalArgumentException("Could not find: $it in decoded set. ")
         }.joinToString(separator = "").toInt()
     }
-    print("Sum of all outputs -> $sum")
+    println("Sum of all outputs -> $sum")
 }
 
 fun List<Pair<List<String>, List<String>>>.countOneFourSevenEight() = flatMap {
@@ -31,27 +27,27 @@ fun structureInputs(inputs: List<String>): List<Pair<List<String>, List<String>>
 }
 
 fun decode(codes: List<String>): Map<Set<Char>, Int> {
-    val sorted = codes.sortedBy { it.length }
-    val codeOne = sorted[0]
-    val codeSeven = sorted[1]
-    val codeFour = sorted[2]
-    val codeEight = sorted.last()
+    val sortedSets = codes.sortedBy { it.length }.map { it.toSet() }
+    val codeOne = sortedSets[0]
+    val codeSeven = sortedSets[1]
+    val codeFour = sortedSets[2]
+    val codeEight = sortedSets.last()
 
-    val charsByCount = sorted.joinToString().toList().groupingBy { it }.eachCount()
+    val charsByCount = sortedSets.joinToString().toList().groupingBy { it }.eachCount()
 
     val segmentF = charsByCount.filter { it.value == 9 }.map { it.key }.first()
-    val codeTwo = sorted.first { !it.contains(segmentF) }
+    val codeTwo = sortedSets.first { !it.contains(segmentF) }
 
     val segmentC = codeOne.toSet().intersect(codeTwo.toSet()).first()
-    val fiveAndSix = sorted.filter { !it.contains(segmentC) }.sortedBy { it.length }
+    val fiveAndSix = sortedSets.filter { !it.contains(segmentC) }.sortedBy { it.size }
     val codeFive = fiveAndSix.first()
     val codeSix = fiveAndSix.last()
 
     val segmentE = (codeSix.toSet() - codeFive.toSet()).first()
 
-    val codeNine = codeEight.replace(segmentE.toString(), "")
-    val codeZero = sorted.first { it.length == 6 && it.toSet() != codeNine.toSet() && it.toSet() != codeSix.toSet() }
-    val codeThree = sorted.first { it.length == 5 && it.toSet() != codeTwo.toSet() && it.toSet() != codeFive.toSet() }
+    val codeNine = codeEight - segmentE
+    val codeZero = sortedSets.first { it.size == 6 && it != codeNine && it != codeSix }
+    val codeThree = sortedSets.first { it.size == 5 && it != codeTwo && it != codeFive }
 
     return mapOf(
         codeZero.toSet() to 0,
