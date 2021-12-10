@@ -47,6 +47,10 @@ fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
         puzzleDayNinePartOne()
         puzzleDayNinePartTwo()
     }
+    10 -> {
+        puzzleDayTenPartOne()
+        puzzleDayTenPartTwo()
+    }
     else -> {
         println("Sorry, looks like puzzle number $puzzleNumber is not solved yet. ")
     }
