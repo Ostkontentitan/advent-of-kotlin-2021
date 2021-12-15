@@ -1,6 +1,7 @@
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
-fun main(args: Array<String>) {
+fun main(args: Array<String>) = runBlocking {
     println("Happy Kotlin-Advent!")
 
     val puzzleNumber = args[0].toInt()
@@ -10,7 +11,7 @@ fun main(args: Array<String>) {
     solvePuzzle(puzzleNumber)
 }
 
-fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
+suspend fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
     1 -> {
         puzzleDayTwoPartOne()
         puzzleDayTwoPartTwo()
@@ -54,6 +55,10 @@ fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
     11 -> {
         puzzleDayElevenPartOne()
         puzzleDayElevenPartTwo()
+    }
+    12 -> {
+        puzzleDayTwelvePartOne()
+        puzzleDayTwelvePartTwo()
     }
     else -> {
         println("Sorry, looks like puzzle number $puzzleNumber is not solved yet. ")
