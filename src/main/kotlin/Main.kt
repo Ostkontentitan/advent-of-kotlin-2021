@@ -1,7 +1,8 @@
+import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import java.io.File
 
-fun main(args: Array<String>) = runBlocking {
+fun main(args: Array<String>) = runBlocking(CoroutineName("AdventOfCoroutines")) {
     println("Happy Kotlin-Advent!")
 
     val puzzleNumber = args[0].toInt()
@@ -63,6 +64,10 @@ suspend fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
     13 -> {
         puzzleDayThirteenPartOne()
         puzzleDayThirteenPartTwo()
+    }
+    14 -> {
+        puzzleDayFourteenPartOne()
+        puzzleDayFourteenPartTwo()
     }
     else -> {
         println("Sorry, looks like puzzle number $puzzleNumber is not solved yet. ")
