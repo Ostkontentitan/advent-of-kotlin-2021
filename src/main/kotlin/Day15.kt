@@ -2,41 +2,51 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.withContext
+import java.io.File
+import kotlin.collections.LinkedHashSet
 import kotlin.math.abs
 
 suspend fun puzzleDayFifteenPartOne() {
     val inputs = readInput(15).toCavePositions()
-    val longestWay = bruteForce(CavePosition(99, 99, 5), inputs, 2_000_000, 1100)
-    println("Puzzle number 15 -> ${longestWay.totalRisk}")
+    do {
+        searchOptimalPath(inputs, 200_000, 976, true)
+    } while (true)
 }
 
 fun List<String>.toCavePositions(): Array<Array<Int>> =
     map { it.map { char -> Integer.parseInt(char.toString()) }.toTypedArray() }.toTypedArray()
 
-suspend fun bruteForce(
-    destination: CavePosition,
+suspend fun searchOptimalPath(
     map: Array<Array<Int>>,
     runs: Int,
-    minRisk: Int = Integer.MAX_VALUE
+    minRisk: Int = Integer.MAX_VALUE,
+    readWriteRouteHashes: Boolean = false
 ): PathFindingResult = withContext(Dispatchers.Default) {
-    val start = CavePosition(0,0, 0)
-    var runNumber = 0
+    val destination = CavePosition(map.lastIndex, map.first().lastIndex, map.last().last())
+    val start = CavePosition(0, 0, 0)
     var best = PathFindingResult(emptyList(), minRisk, false)
-    val routesToAvoid = mutableSetOf<Int>()
 
-    do {
-        runNumber++
+    println("Reading routes to avoid from file. ")
+    val routesToAvoid: MutableSet<Int> =
+        if (readWriteRouteHashes) readRouteHashesFromFile() else linkedSetOf()
+
+    print("Searching for optimal path")
+    val startTime = System.currentTimeMillis()
+    repeat(runs) { runNumber ->
+        if (runNumber % 20_000 == 0) {
+            print(".")
+        }
         val latestAdditions =
             (1..8).map {
                 async {
                     findWayFrom(
-                        start,
-                        destination,
-                        map,
-                        emptyList(),
-                        0,
-                        best.totalRisk,
-                        routesToAvoid
+                        current = start,
+                        destination = destination,
+                        map = map,
+                        visited = listOf(),
+                        currentRisk = 0,
+                        bestRisk = best.totalRisk,
+                        routesToAvoid = routesToAvoid
                     )
                 }
             }.awaitAll()
@@ -50,9 +60,45 @@ suspend fun bruteForce(
             best = bestAddition
             println("Found quicker route with risk of: ${bestAddition.totalRisk}")
         }
-    } while (runNumber <= runs)
+    }
+    val searchTime = (System.currentTimeMillis() - startTime) / 1000L
+    println()
+    println("Finished in: $searchTime")
+    println("Writing hashes of visited routes")
+
+    if (readWriteRouteHashes) {
+        writeRouteHashesIntoFile(routesToAvoid)
+    }
 
     best
+}
+
+fun writeRouteHashesIntoFile(routesToAvoid: Set<Int>) {
+    val size = routesToAvoid.size
+    val startIndex = if (size > MAX_HASHES) {
+        size - MAX_HASHES
+    } else {
+        0
+    }
+    File("routesToAvoid.txt").printWriter().use { out ->
+        routesToAvoid.forEachIndexed { index, hash ->
+            if (index > startIndex) {
+                out.println("$hash")
+            }
+        }
+    }
+}
+
+fun readRouteHashesFromFile(): MutableSet<Int> {
+    val hashes = LinkedHashSet<Int>(MAX_HASHES + 20_000_000)
+    File("routesToAvoid.txt").apply {
+        if (!exists()) {
+            createNewFile()
+        }
+    }.forEachLine {
+        hashes.add(it.toInt())
+    }
+    return hashes
 }
 
 tailrec fun findWayFrom(
@@ -86,7 +132,7 @@ fun visitablePositionsFrom(
     current: CavePosition,
     map: Array<Array<Int>>,
     visited: List<CavePosition>,
-    routesToAvoid: Set<Int>,
+    routesToAvoid: Set<Int>
 ): List<CavePosition> {
     val x = current.x
     val y = current.y
@@ -112,3 +158,5 @@ data class CavePosition(val y: Int, val x: Int, val risk: Int) {
 }
 
 data class PathFindingResult(val path: List<CavePosition>, val totalRisk: Int, val complete: Boolean)
+
+private const val MAX_HASHES = 50_000_000
