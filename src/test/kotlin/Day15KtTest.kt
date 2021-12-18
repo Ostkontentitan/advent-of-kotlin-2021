@@ -9,7 +9,7 @@ internal class Day15KtTest {
     @Test
     fun `should find the shortest way in example`() = runBlocking {
         val inputs = readInput("testInput15.txt").toCavePositions()
-        val lowestRisk = bruteForce(CavePosition(9, 9, 1), inputs, runs = 10_000)
+        val lowestRisk = bruteForce(CavePosition(9, 9, 1), inputs, runs = 15_000)
         assertEquals(40, lowestRisk.totalRisk)
     }
 

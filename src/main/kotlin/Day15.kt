@@ -6,7 +6,7 @@ import kotlin.math.abs
 
 suspend fun puzzleDayFifteenPartOne() {
     val inputs = readInput(15).toCavePositions()
-    val longestWay = bruteForce(CavePosition(99, 99, 5), inputs, 2_000_000, 994)
+    val longestWay = bruteForce(CavePosition(99, 99, 5), inputs, 2_000_000, 1100)
     println("Puzzle number 15 -> ${longestWay.totalRisk}")
 }
 
@@ -19,26 +19,36 @@ suspend fun bruteForce(
     runs: Int,
     minRisk: Int = Integer.MAX_VALUE
 ): PathFindingResult = withContext(Dispatchers.Default) {
+    val start = CavePosition(0,0, 0)
     var runNumber = 0
-    var best = PathFindingResult(emptyList(), Int.MAX_VALUE, false)
-    var bestRisk = minRisk
+    var best = PathFindingResult(emptyList(), minRisk, false)
     val routesToAvoid = mutableSetOf<Int>()
 
     do {
         runNumber++
         val latestAdditions =
-            (1..8).map { async { findWayFrom(CavePosition(0, 0, 0), destination, map, emptyList(), 0, bestRisk, routesToAvoid) } }.awaitAll()
+            (1..8).map {
+                async {
+                    findWayFrom(
+                        start,
+                        destination,
+                        map,
+                        emptyList(),
+                        0,
+                        best.totalRisk,
+                        routesToAvoid
+                    )
+                }
+            }.awaitAll()
 
         latestAdditions.forEach {
             routesToAvoid.add(it.hashCode())
         }
 
         val bestAddition = latestAdditions.filter { it.complete }.minByOrNull { it.totalRisk }
-        val risk = bestAddition?.totalRisk ?: Int.MAX_VALUE
-        if (risk < bestRisk) {
-            best = bestAddition!!
-            bestRisk = risk
-            println("Found quicker route with risk of: $risk")
+        if (bestAddition != null) {
+            best = bestAddition
+            println("Found quicker route with risk of: ${bestAddition.totalRisk}")
         }
     } while (runNumber <= runs)
 
@@ -57,15 +67,13 @@ tailrec fun findWayFrom(
     val updatedVisits = visited + current
     val newRisk = currentRisk + current.risk
 
-    if (newRisk > bestRisk) {
+    if (newRisk >= bestRisk) {
         return PathFindingResult(updatedVisits, newRisk, false)
+    } else if (current == destination) {
+        return PathFindingResult(updatedVisits, newRisk, true)
     }
 
     val visitable = visitablePositionsFrom(current, map, updatedVisits, routesToAvoid)
-
-    if (visitable.contains(destination)) {
-        return PathFindingResult(updatedVisits + destination, newRisk, true)
-    }
 
     if (visitable.isEmpty()) {
         return PathFindingResult(updatedVisits, newRisk, false)
@@ -83,24 +91,24 @@ fun visitablePositionsFrom(
     val x = current.x
     val y = current.y
     return listOf(
-        x + 1 to y,
-        x to y + 1,
-        x to y - 1,
-        x - 1 to y
-    ).mapNotNull { (x, y) ->
-        val risk = map.getOrNull(x)?.getOrNull(y)
+        y + 1 to x,
+        y to x + 1,
+        y to x - 1,
+        y - 1 to x
+    ).mapNotNull { (y, x) ->
+        val risk = map.getOrNull(y)?.getOrNull(x)
         if (risk == null) {
             null
         } else {
-            CavePosition(x, y, risk)
+            CavePosition(y, x, risk)
         }
     }.filterNot { visitable ->
         visited.count { visitable.inProximityTo(it) } > 1 || routesToAvoid.contains((visited + visitable).hashCode())
     }
 }
 
-data class CavePosition(val x: Int, val y: Int, val risk: Int) {
-    fun inProximityTo(other: CavePosition): Boolean = abs(x + y - (other.x + other.y)) < 2
+data class CavePosition(val y: Int, val x: Int, val risk: Int) {
+    fun inProximityTo(other: CavePosition): Boolean = abs(y + x - (other.y + other.x)) < 2
 }
 
 data class PathFindingResult(val path: List<CavePosition>, val totalRisk: Int, val complete: Boolean)

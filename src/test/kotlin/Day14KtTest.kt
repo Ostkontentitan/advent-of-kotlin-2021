@@ -13,7 +13,7 @@ internal class Day14KtTest {
         val instructions = extractInstructionPairs(inputs)
         val polys = extractPolyTemplate(inputs.first())
 
-        val result = performReplacementStepsAlt(polys, instructions, 1).map { it[0] }.toList().joinToString("")
+        val result = performReplacementStepsAlt(polys, instructions, 1).map { it.first }.toList().joinToString("")
 
         assertEquals("NCNBCHB", result)
     }
@@ -24,7 +24,7 @@ internal class Day14KtTest {
         val instructions = extractInstructionPairs(inputs)
         val polys = extractPolyTemplate(inputs.first())
 
-        val result = performReplacementStepsAlt(polys, instructions, 2).map { it[0] }.toList().joinToString("")
+        val result = performReplacementStepsAlt(polys, instructions, 2).map { it.first }.toList().joinToString("")
 
         assertEquals("NBCCNBBBCBHCB", result)
     }
@@ -35,7 +35,7 @@ internal class Day14KtTest {
         val instructions = extractInstructionPairs(inputs)
         val polys = extractPolyTemplate(inputs.first())
 
-        val result = performReplacementStepsAlt(polys, instructions, 3).map { it[0] }.toList().joinToString("")
+        val result = performReplacementStepsAlt(polys, instructions, 3).map { it.first }.toList().joinToString("")
 
         assertEquals("NBBBCNCCNBBNBNBBCHBHHBCHB", result)
     }
@@ -46,7 +46,7 @@ internal class Day14KtTest {
         val instructions = extractInstructionPairs(inputs)
         val polys = extractPolyTemplate(inputs.first())
 
-        val result = performReplacementStepsAlt(polys, instructions, 4).map { it[0] }.toList().joinToString("")
+        val result = performReplacementStepsAlt(polys, instructions, 4).map { it.first }.toList().joinToString("")
 
         assertEquals("NBBNBNBBCCNBCNCCNBBNBBNBBBNBBNBBCBHCBHHNHCBBCBHCB", result)
     }
