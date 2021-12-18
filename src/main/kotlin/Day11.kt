@@ -37,13 +37,13 @@ fun puzzleDayElevenPartTwo() {
     var step = 1
     var foundMegaFlash = false
 
-    while(!foundMegaFlash) {
+    while (!foundMegaFlash) {
         octos.forEach { octoList ->
             octoList.forEach { octo ->
                 octoCharger(step, octos, listOf(octo))
             }
         }
-        val flashes = octos.sumOf { octoList -> octoList.map { if(it.history.contains(step)) 1 else 0 }.sum()  }
+        val flashes = octos.sumOf { octoList -> octoList.map { if (it.history.contains(step)) 1 else 0 }.sum() }
         if (flashes == totalOctos) {
             foundMegaFlash = true
             println("All octos flashed at step: $step")
@@ -55,7 +55,7 @@ fun puzzleDayElevenPartTwo() {
 tailrec fun octoCharger(step: Int, octos: OctoList, octopus: List<Octopus>) {
     val flashedOcti = octopus.filter { it.increaseCharge(step) }.flatMap { getSurroundingOctos(octos, it) }
 
-    if(flashedOcti.isEmpty()) return
+    if (flashedOcti.isEmpty()) return
 
     octoCharger(step, octos, flashedOcti)
 }
@@ -85,7 +85,7 @@ fun OctoList.get(x: Int, y: Int) = if (x in 0..this[0].lastIndex && y in 0..this
 data class Octopus(var charge: Int, val posX: Int, val posY: Int) {
     val history = mutableSetOf<Int>()
     fun increaseCharge(step: Int): Boolean {
-        if(history.contains(step) && charge == 0) {
+        if (history.contains(step) && charge == 0) {
             return false
         }
 

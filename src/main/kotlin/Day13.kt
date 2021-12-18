@@ -6,8 +6,6 @@ fun puzzleDayThirteenPartOne() {
     val folded = foldLeft(coordinates, instruction.value)
 
     println("Dots after first fold: ${folded.size}")
-
-
 }
 
 fun puzzleDayThirteenPartTwo() {
@@ -22,11 +20,11 @@ fun puzzleDayThirteenPartTwo() {
 fun visualizePaperDots(foldedPaper: Set<Point>): List<String> {
     val maxY = foldedPaper.maxOf { it.y }
     val maxX = foldedPaper.maxOf { it.x }
-    val canvas = (0 .. maxY).map { ".".repeat(maxX + 1) }
+    val canvas = (0..maxY).map { ".".repeat(maxX + 1) }
     return foldedPaper.fold(canvas) { canv, point ->
-        canv.mapIndexed { index, string ->
-            if (index == point.y) {
-                string.mapIndexed { index, c -> if (index == point.x) '#' else c }.joinToString("")
+        canv.mapIndexed { yIndex, string ->
+            if (yIndex == point.y) {
+                string.mapIndexed { yIndex, c -> if (yIndex == point.x) '#' else c }.joinToString("")
             } else string
         }
     }
@@ -48,7 +46,6 @@ fun extractInstructions(inputs: List<String>): List<Fold> {
             "x" -> Fold.X(value.toInt())
             "y" -> Fold.Y(value.toInt())
             else -> throw IllegalArgumentException("only x or y expected")
-
         }
     }
 }
@@ -82,5 +79,3 @@ fun foldLeft(coordinates: Set<Point>, foldX: Int): Set<Point> {
     }
     return (coordinates.filter { it.x < foldX } + newCoordinates).toSet()
 }
-
-

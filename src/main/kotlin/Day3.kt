@@ -28,11 +28,11 @@ fun puzzleDayThreePartTwo() {
 }
 
 fun List<String>.foldDownBySignificance(byLeast: Boolean = false) = (0 until this[0].length).fold(this) { acc: List<String>, index: Int ->
-    if(acc.size == 1) return@fold acc
+    if (acc.size == 1) return@fold acc
     val oneCount = acc.map { it[index] }.count { char -> char == '1' }
     val zeroCount = acc.map { it[index] }.count { char -> char == '0' }
 
-    val significanceBit = if(byLeast) {
+    val significanceBit = if (byLeast) {
         if (oneCount < zeroCount) '1' else '0'
     } else {
         if (oneCount >= zeroCount) '1' else '0'

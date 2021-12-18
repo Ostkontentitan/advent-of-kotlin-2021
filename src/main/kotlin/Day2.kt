@@ -4,7 +4,7 @@ fun puzzleDayTwoPartOne() {
     val inputs = readInput(2)
     val position = inputs.fold(Position()) { acc, item ->
         val number = getNumber(item)
-        when(getDirection(item)) {
+        when (getDirection(item)) {
             Direction.UP -> acc.copy(height = acc.height + number)
             Direction.DOWN -> acc.copy(height = acc.height - number)
             Direction.FORWARD -> acc.copy(distance = acc.distance + number)
@@ -17,7 +17,7 @@ fun puzzleDayTwoPartTwo() {
     val inputs = readInput(2)
     val navigationalState = inputs.fold(NavigationalState()) { acc, item ->
         val number = getNumber(item)
-        when(getDirection(item)) {
+        when (getDirection(item)) {
             Direction.UP -> acc.copy(aim = acc.aim - number)
             Direction.DOWN -> acc.copy(aim = acc.aim + number)
             Direction.FORWARD -> acc.copy(distance = acc.distance + number, height = acc.height + acc.aim * number)
@@ -25,7 +25,6 @@ fun puzzleDayTwoPartTwo() {
     }
     println(abs(navigationalState.height * navigationalState.distance))
 }
-
 
 fun getDirection(input: String): Direction = when {
     input.startsWith("forward") -> Direction.FORWARD

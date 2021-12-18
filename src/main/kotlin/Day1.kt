@@ -4,9 +4,9 @@ fun puzzleDayOnePartOne() {
 
     var previous = -1
     var count = 0
-    for(number in numbers){
-        if(previous != -1) {
-            if(number > previous) {
+    for (number in numbers) {
+        if (previous != -1) {
+            if (number > previous) {
                 count++
             }
         }
@@ -21,9 +21,9 @@ fun puzzleDayOnePartTwo() {
 
     var previous = -1
     var count = 0
-    for(number in numbers){
-        if(previous != -1) {
-            if(number > previous) {
+    for (number in numbers) {
+        if (previous != -1) {
+            if (number > previous) {
                 count++
             }
         }

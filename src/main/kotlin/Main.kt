@@ -12,10 +12,10 @@ fun main(args: Array<String>) = runBlocking(CoroutineName("AdventOfCoroutines"))
     solvePuzzle(puzzleNumber)
 }
 
-suspend fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
+suspend fun solvePuzzle(puzzleNumber: Int): Unit = when (puzzleNumber) {
     1 -> {
-        puzzleDayTwoPartOne()
-        puzzleDayTwoPartTwo()
+        puzzleDayOnePartOne()
+        puzzleDayOnePartTwo()
     }
     2 -> {
         puzzleDayTwoPartOne()
@@ -69,10 +69,13 @@ suspend fun solvePuzzle(puzzleNumber: Int): Unit = when(puzzleNumber) {
         puzzleDayFourteenPartOne()
         puzzleDayFourteenPartTwo()
     }
+    15 -> {
+        puzzleDayFifteenPartOne()
+    }
     else -> {
         println("Sorry, looks like puzzle number $puzzleNumber is not solved yet. ")
     }
 }
 
-fun readInput(number: Int): List<String> = readInput("input${number}.txt")
+fun readInput(number: Int): List<String> = readInput("input$number.txt")
 fun readInput(filename: String): List<String> = File(ClassLoader.getSystemResource(filename).file).readLines()

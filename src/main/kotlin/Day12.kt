@@ -40,14 +40,14 @@ fun findUniquePaths(
         return 1
     }
     val connectionsToElement = connections.filter { it.contains(from) }.filterVisitable(from, visited)
-    val ticketConnections = if(goldenTicketAvailable) connections.filter { it.contains(from) } - connectionsToElement.toSet() else emptyList()
+    val ticketConnections = if (goldenTicketAvailable) connections.filter { it.contains(from) } - connectionsToElement.toSet() else emptyList()
 
     val nextOnes = connectionsToElement.map { it.getOther(from) }.filterNot { it == Cave.Start }
     val nextOnesWithTicket = ticketConnections.map { it.getOther(from) }.filterNot { it.isBig || it == Cave.Start }
 
     val updatedVisits = visited.incrementedForItem(from)
     return nextOnes.sumOf { findUniquePaths(it, connections, updatedVisits, goldenTicketAvailable) } +
-            nextOnesWithTicket.sumOf { findUniquePaths(it, connections, updatedVisits, false) }
+        nextOnesWithTicket.sumOf { findUniquePaths(it, connections, updatedVisits, false) }
 }
 
 fun List<Connection>.filterVisitable(cave: Cave, visited: Map<Cave, Int>) =
@@ -57,7 +57,6 @@ fun Cave.isVisitable(visited: Map<Cave, Int>) = (visited[this] ?: 0) < this.maxV
 
 fun Map<Cave, Int>.incrementedForItem(item: Cave): Map<Cave, Int> =
     this + (item to (this[item] ?: 0) + 1)
-
 
 data class Cave(val key: String) {
     val isSmall = key == key.lowercase()

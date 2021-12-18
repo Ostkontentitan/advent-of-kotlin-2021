@@ -40,7 +40,7 @@ fun puzzleDayFourPartTwo() {
         boards.forEach { it.checkNumber(number) }
         val (completedBoards, notCompletedBoards) = boards.partition { it.isCompleted() }
         boards = notCompletedBoards
-        if(completedBoards.isNotEmpty()) {
+        if (completedBoards.isNotEmpty()) {
             lastWinningNumber = number.toInt()
             lastWinningBoard = completedBoards.last()
         }

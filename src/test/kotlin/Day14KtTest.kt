@@ -57,11 +57,10 @@ internal class Day14KtTest {
         val instructions = extractInstructionPairs(inputs)
         val polys = extractPolyTemplate(inputs.first())
 
-        val result = performReplacementStepsAlt(polys, instructions, 40)
+        val result = performReplacementStepsAlt(polys, instructions, 25)
         val counts = countCharsIn(result).values.sorted()
         val sum = counts.maxOf { it } - counts.minOf { it }
 
         assertEquals(2188189693529L, sum)
     }
-
 }

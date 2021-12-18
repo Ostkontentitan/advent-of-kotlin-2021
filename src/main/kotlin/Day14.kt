@@ -1,7 +1,11 @@
-
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flattenConcat
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.fold
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 
 suspend fun puzzleDayFourteenPartOne() {
@@ -45,23 +49,22 @@ tailrec fun performReplacementStepsAlt(
 
 @OptIn(FlowPreview::class)
 fun performReplacementStep(polyChain: Flow<String>, instructions: Map<String, Char>): Flow<String> =
-    polyChain.map { x -> performInsertion(x[0], x.getOrNull(1), instructions) }.flattenMerge()
+    polyChain.map { x -> performInsertion(x[0], x.getOrNull(1), instructions) }.flattenConcat()
 
-suspend fun performInsertion(x: Char, y: Char?, instructions: Map<String, Char>): Flow<String> =
-    flow {
-        if(y == null) {
-            emit(x.toString())
-            return@flow
-        }
-        val segment = "$x$y"
-        val replacementElement = instructions[segment]
-        if (replacementElement != null) {
-            emit("$x$replacementElement")
-            emit("$replacementElement$y")
-        } else {
-            emit("$x$y")
-        }
+suspend fun performInsertion(x: Char, y: Char?, instructions: Map<String, Char>): Flow<String> = flow {
+    if (y == null) {
+        emit(x.toString())
+        return@flow
     }
+    val segment = "$x$y"
+    val replacementElement = instructions[segment]
+    if (replacementElement != null) {
+        emit("$x$replacementElement")
+        emit("$replacementElement$y")
+    } else {
+        emit(segment)
+    }
+}
 
 fun extractInstructionPairs(inputs: List<String>): Map<String, Char> = inputs.subList(2, inputs.size).associate {
     val (target, replace) = it.split(" -> ")

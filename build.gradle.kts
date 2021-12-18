@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC2")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0-RC3")
     testImplementation(kotlin("test"))
 }
 
@@ -21,7 +21,7 @@ tasks.test {
     useJUnit()
 }
 
-tasks.withType<KotlinCompile>() {
+tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
 
