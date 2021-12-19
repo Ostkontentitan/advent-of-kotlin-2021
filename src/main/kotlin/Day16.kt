@@ -3,33 +3,61 @@ fun puzzleDaySixteenPartOne() {
 }
 
 fun toBinary(input: String): String = input.map { HEX_TO_BINARY[it]!! }.joinToString("")
-fun parseBinaryCode(binaryCode: String): Package {
-    val version = TRIBIT_TO_INT[binaryCode.substring(0, 3)]!!.toInt()
-    val typeId = TRIBIT_TO_INT[binaryCode.substring(3, 6)]!!.toInt()
+fun parseNextPackage(packageStart: Int = 0, binaryCode: String): ParseResult<Package> {
+    val header = parseHeader(packageStart, binaryCode)
+    val bodyStart = packageStart + HEADER_LENGTH
 
-    if (typeId == 4) {
-        val body = binaryCode.substring(6, binaryCode.length)
-        val value = parseLiteralBody(body)
-        return Package.LiteralValue(version, value)
+    return if (header.typeId == 4) {
+        val (value, nextIndex) = parseLiteralBody(bodyStart, binaryCode)
+        ParseResult(Package.LiteralValue(header, value!!), nextIndex + HEADER_LENGTH)
     } else {
-        TODO("Unimplemented type")
+        val body = binaryCode.substring(bodyStart, binaryCode.length)
+        val length = parseOperatorBody(body)
+        ParseResult(Package.Operator(header, length), 0)
     }
 }
 
-fun parseLiteralBody(body: String): Int {
+fun parseHeader(packageStart: Int, binaryCode: String): Header {
+    val typeIndex = packageStart + 3
+
+    val version = TRIBIT_TO_INT[binaryCode.substring(packageStart, typeIndex)]!!.toInt()
+    val typeId = TRIBIT_TO_INT[binaryCode.substring(typeIndex, typeIndex + 3)]!!.toInt()
+    return Header(version = version, typeId = typeId)
+}
+
+data class ParseResult<T>(val pack: T?, val nextIndex: Int)
+
+fun parseOperatorBody(body: String): Int {
+    when (val lenghtTypeId = body.first()) {
+        '0' -> {
+            val packagesLength = body.substring(1, 16).triBitToDecimal()
+            TODO()
+        }
+        '1' -> {
+            val subPackages = body.substring(1, 16)
+            TODO()
+        }
+        else -> throw IllegalStateException("Unexpected non binary char $lenghtTypeId.")
+    }
+}
+
+fun parseLiteralBody(startIndex: Int, body: String): ParseResult<Int> {
     var value = ""
-    var next = 0
+    var next = startIndex
     do {
         value += body.substring(next + 1, next + 5)
 
         if (body[next] == '0') {
-            next = -1
+            val diff = (next - startIndex)
+            val continueIndex = diff + (diff % 4) + LITERAL_CHUNK_SIZE + 1
+            return ParseResult(value.triBitToDecimal(), continueIndex)
         } else {
-            next += 5
+            next += LITERAL_CHUNK_SIZE
         }
-    } while (next != -1)
-    return value.windowed(3,3).joinToString("").toInt(2)
+    } while (true)
 }
+
+fun String.triBitToDecimal() = this.windowed(3, 3).joinToString("").toInt(2)
 
 private val HEX_TO_BINARY = mapOf(
     '0' to "0000",
@@ -50,25 +78,6 @@ private val HEX_TO_BINARY = mapOf(
     'F' to "1111",
 )
 
-private val BINARY_TO_HEX = mapOf(
-    "0000" to '0',
-    "0001" to '1',
-    "0010" to '2',
-    "0011" to '3',
-    "0100" to '4',
-    "0101" to '5',
-    "0110" to '6',
-    "0111" to '7',
-    "1000" to '8',
-    "1001" to '9',
-    "1010" to 'A',
-    "1011" to 'B',
-    "1100" to 'C',
-    "1101" to 'D',
-    "1110" to 'E',
-    "1111" to 'F',
-)
-
 private val TRIBIT_TO_INT = mapOf(
     "000" to 0,
     "001" to 1,
@@ -80,8 +89,14 @@ private val TRIBIT_TO_INT = mapOf(
     "111" to 7,
 )
 
-sealed class Package(val typeId: Int) {
-    abstract val version: Int
+private const val HEADER_LENGTH = 6
+private const val LITERAL_CHUNK_SIZE = 5
 
-    data class LiteralValue(override val version: Int, val value: Int) : Package(4)
+data class Header(val version: Int, val typeId: Int)
+
+sealed class Package {
+    abstract val header: Header
+
+    data class LiteralValue(override val header: Header, val value: Int) : Package()
+    data class Operator(override val header: Header, val length: Int) : Package()
 }
