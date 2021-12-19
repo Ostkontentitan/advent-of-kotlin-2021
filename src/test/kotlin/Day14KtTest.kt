@@ -52,12 +52,25 @@ internal class Day14KtTest {
     }
 
     @Test
+    fun `should properly perform 10 steps and give correct substract`() = runBlocking(CoroutineName("test")) {
+        val inputs = readInput("testInput14.txt")
+        val instructions = extractInstructionPairs(inputs)
+        val polys = extractPolyTemplate(inputs.first())
+
+        val result = performReplacementStepsAlt(polys, instructions, 10)
+        val counts = countCharsIn(result).values.sorted()
+        val sum = counts.maxOf { it } - counts.minOf { it }
+
+        assertEquals(1588, sum)
+    }
+
+    @Test
     fun `should properly perform 40 steps and give correct substract`() = runBlocking(CoroutineName("test")) {
         val inputs = readInput("testInput14.txt")
         val instructions = extractInstructionPairs(inputs)
         val polys = extractPolyTemplate(inputs.first())
 
-        val result = performReplacementStepsAlt(polys, instructions, 25)
+        val result = performReplacementStepsAlt(polys, instructions, 40)
         val counts = countCharsIn(result).values.sorted()
         val sum = counts.maxOf { it } - counts.minOf { it }
 

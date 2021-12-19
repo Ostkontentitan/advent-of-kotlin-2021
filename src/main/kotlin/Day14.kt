@@ -29,7 +29,13 @@ suspend fun puzzleDayFourteenPartTwo() {
 }
 
 suspend fun countCharsIn(sequence: Flow<PolyLink>) = withContext(Dispatchers.Default) {
+    var counter = 0L
+    println("counting chars...")
     sequence.fold(mapOf<Char, Long>()) { acc, value ->
+        if(counter % 5_000_000L == 0L) {
+            println("${counter / 1000000L} million")
+        }
+        counter++
         val new = value.first
         acc + (new to (acc[new] ?: 0L) + 1L)
     }
