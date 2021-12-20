@@ -8,7 +8,7 @@ internal class Day15KtTest {
 
     @Test
     fun `should find the shortest way in example`() = runBlocking {
-        val inputs = readInput("testInput15.txt").toCavePositions()
+        val inputs = readInput("testInput15.txt").toRiskMap()
         val startRisk = inputs[0][0]
         val path = searchOptimalPath(inputs, 10_000)!!
         assertEquals(40, path.sumOf { it.risk } - startRisk)
@@ -16,7 +16,7 @@ internal class Day15KtTest {
 
     @Test
     fun `should find the shortest way in extended`() = runBlocking {
-        val inputs = readInput("testInput15_extended.txt").toCavePositions()
+        val inputs = readInput("testInput15_extended.txt").toRiskMap()
         val startRisk = inputs[0][0]
         val path = searchOptimalPath(inputs, 10_000)!!
         assertEquals(49, path.sumOf { it.risk } - startRisk)
@@ -24,10 +24,29 @@ internal class Day15KtTest {
 
     @Test
     fun `should find the shortest way in custom example`() = runBlocking {
-        val inputs = readInput("testInput15_alt.txt").toCavePositions()
+        val inputs = readInput("testInput15_alt.txt").toRiskMap()
         val startRisk = inputs[0][0]
         val path = searchOptimalPath(inputs, 25_000)!!
         assertEquals(32, path.sumOf { it.risk } - startRisk)
+    }
+
+    @Test
+    fun `should correctly reveal full map`() = runBlocking {
+        val inputs = readInput("testInput15.txt").toRiskMap()
+        val expected = readInput("testInput15_part2.txt").toRiskMap()
+
+        val actual = revealActualCave(inputs)
+        assertEquals(expected.sumOf { it.contentHashCode() }, actual.sumOf { it.contentHashCode() })
+    }
+
+    @Test
+    fun `finds optimal path in revealed example`() = runBlocking {
+        val inputs = readInput("testInput15.txt").toRiskMap()
+
+        val revealed = revealActualCave(inputs)
+        val best = searchOptimalPath(revealed, 30_000)!!.sumOf { it.risk } - revealed[0][0]
+
+        assertEquals(315, best)
     }
 
     @Test
