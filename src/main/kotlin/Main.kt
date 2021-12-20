@@ -66,8 +66,8 @@ suspend fun solvePuzzle(puzzleNumber: Int): Unit = when (puzzleNumber) {
         puzzleDayThirteenPartTwo()
     }
     14 -> {
-        puzzleDayFourteenPartOne()
-        puzzleDayFourteenPartTwo()
+        day14.puzzlePartOne()
+        day14.puzzlePartTwo()
     }
     15 -> {
         puzzleDayFifteenPartOne()
