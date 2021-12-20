@@ -1,18 +1,14 @@
 fun puzzleDaySixteenPartOne() {
     val input = readInput(16).first()
+    val sum = BITSParser(toBinary(input)).parsePackages().sumOf { it.versionSum }
+    println("Package sum is: $sum")
 }
 
 class BITSParser(private val binaryString: String) {
 
     private var currentPosition = 0
-    private val packages = mutableListOf<BITSPackage>()
 
-    fun parsePackages(): List<BITSPackage> {
-        if (currentPosition != binaryString.length) {
-            throw IllegalStateException("Unexpected end index $currentPosition instead of ${binaryString.length}")
-        }
-        return packages
-    }
+    fun parsePackages(): List<BITSPackage> = listOf(parseNextPackage())
 
     private fun parseNextPackage(): BITSPackage {
         val header = parseHeader()
@@ -31,37 +27,37 @@ class BITSParser(private val binaryString: String) {
 
         val version = TRIBIT_TO_INT[binaryString.substring(currentPosition, typeIndex)]!!.toInt()
         val typeId = TRIBIT_TO_INT[binaryString.substring(typeIndex, typeIndex + 3)]!!.toInt()
-        currentPosition += 6
+        currentPosition += HEADER_SIZE
         return Header(version = version, typeId = typeId)
     }
 
-    private fun parseLiteralBody(): Int {
-        var value = ""
+    private fun parseLiteralBody(): Long {
+        var combinedSegments = ""
+        var exit = false
         do {
-            value += binaryString.substring(currentPosition + 1, currentPosition + LITERAL_CHUNK_SIZE)
-
-            if (binaryString[currentPosition] == '0') {
-                currentPosition += LITERAL_CHUNK_SIZE
-                    // TODO offset padding bits
-                return value.triBitToDecimal()
-            } else {
-                currentPosition += LITERAL_CHUNK_SIZE
+            if (binaryString[currentPosition] == ZERO_CHAR) {
+                exit = true
             }
-        } while (true)
+            combinedSegments += binaryString.substring(currentPosition + 1, currentPosition + LITERAL_CHUNK_SIZE)
+            currentPosition += LITERAL_CHUNK_SIZE
+
+        } while (!exit)
+
+        return combinedSegments.binaryToDecimal()
     }
 
     private fun parseOperatorBody(): List<BITSPackage> {
         val lenghtTypeId = binaryString[currentPosition]
         currentPosition++
         return when (lenghtTypeId) {
-            '0' -> parseOperatorPackagesByLength()
-            '1' -> parseOperatorPackagesByCount()
+            ZERO_CHAR -> parseOperatorPackagesByLength()
+            ONE_CHAR -> parseOperatorPackagesByCount()
             else -> throw IllegalStateException("Unexpected non binary char $lenghtTypeId.")
         }
     }
 
     private fun parseOperatorPackagesByCount(): List<BITSPackage> {
-        val subCount = binaryString.substring(currentPosition, currentPosition + 11).triBitToDecimal()
+        val subCount = +("0" + binaryString.substring(currentPosition, currentPosition + 11)).binaryToDecimal()
         currentPosition += 11
         val packages = mutableListOf<BITSPackage>()
         while (packages.size < subCount) {
@@ -71,7 +67,7 @@ class BITSParser(private val binaryString: String) {
     }
 
     private fun parseOperatorPackagesByLength(): List<BITSPackage> {
-        val subLength = binaryString.substring(currentPosition, currentPosition + 15).triBitToDecimal()
+        val subLength = binaryString.substring(currentPosition, currentPosition + 15).binaryToDecimal()
         currentPosition += 15
         val endPosition = currentPosition + subLength
         val packages = mutableListOf<BITSPackage>()
@@ -80,11 +76,18 @@ class BITSParser(private val binaryString: String) {
         }
         return packages
     }
+
+    companion object {
+        private const val LITERAL_CHUNK_SIZE = 5
+        private const val HEADER_SIZE = 6
+        private const val ZERO_CHAR = '0'
+        private const val ONE_CHAR = '1'
+    }
 }
 
 fun toBinary(input: String): String = input.map { HEX_TO_BINARY[it]!! }.joinToString("")
 
-fun String.triBitToDecimal() = this.windowed(3, 3).joinToString("").toInt(2)
+fun String.binaryToDecimal() = this.toLong(2)
 
 private val HEX_TO_BINARY = mapOf(
     '0' to "0000",
@@ -116,15 +119,13 @@ private val TRIBIT_TO_INT = mapOf(
     "111" to 7,
 )
 
-private const val LITERAL_CHUNK_SIZE = 5
-
 data class Header(val version: Int, val typeId: Int)
 
 sealed class BITSPackage {
     abstract val header: Header
     abstract val versionSum: Int
 
-    data class LiteralValue(override val header: Header, val value: Int) : BITSPackage() {
+    data class LiteralValue(override val header: Header, val value: Long) : BITSPackage() {
         override val versionSum: Int
             get() = header.version
     }
