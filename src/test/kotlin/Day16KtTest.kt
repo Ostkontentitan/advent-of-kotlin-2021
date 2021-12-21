@@ -1,3 +1,7 @@
+import day16.BITSPackage
+import day16.BITSParser
+import day16.Header
+import day16.toBinary
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals

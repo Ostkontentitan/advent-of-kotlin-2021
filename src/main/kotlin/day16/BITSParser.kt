@@ -25,13 +25,16 @@ class BITSParser(private val binaryString: String) {
 
         val version = binaryString.substring(currentPosition, typeIndex).toInt(2)
         val typeId = binaryString.substring(typeIndex, typeIndex + 3).toInt(2)
+
         currentPosition += HEADER_SIZE
+
         return Header(version = version, typeId = typeId)
     }
 
     private fun parseLiteralBody(): Long {
         var combinedSegments = ""
         var exit = false
+
         do {
             if (binaryString[currentPosition] == ZERO_CHAR) {
                 exit = true
@@ -45,17 +48,19 @@ class BITSParser(private val binaryString: String) {
     }
 
     private fun parseOperatorBody(): List<BITSPackage> {
-        val lenghtTypeId = binaryString[currentPosition]
+        val lengthTypeId = binaryString[currentPosition]
+
         currentPosition++
-        return when (lenghtTypeId) {
+
+        return when (lengthTypeId) {
             ZERO_CHAR -> parseOperatorPackagesByLength()
             ONE_CHAR -> parseOperatorPackagesByCount()
-            else -> throw IllegalStateException("Unexpected non binary char $lenghtTypeId.")
+            else -> throw IllegalStateException("Unexpected non binary char $lengthTypeId.")
         }
     }
 
     private fun parseOperatorPackagesByCount(): List<BITSPackage> {
-        val subCount = +("0" + binaryString.substring(currentPosition, currentPosition + 11)).binaryToDecimal()
+        val subCount = binaryString.substring(currentPosition, currentPosition + 11).binaryToDecimal()
         currentPosition += 11
         val packages = mutableListOf<BITSPackage>()
         while (packages.size < subCount) {
@@ -72,6 +77,7 @@ class BITSParser(private val binaryString: String) {
         while (currentPosition < endPosition) {
             packages.add(parsePackage())
         }
+        assert(currentPosition.toLong() == endPosition) { "Expected current position ($currentPosition) to match end position ($endPosition)" }
         return packages
     }
 

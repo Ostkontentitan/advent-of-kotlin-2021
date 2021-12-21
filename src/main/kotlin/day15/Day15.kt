@@ -4,18 +4,19 @@ import readInput
 
 fun puzzle() {
     val inputs = readInput(15).toRiskMap()
-    val bestPartOne = searchOptimalPath(inputs, 20_000_000)!!.sumOf { it.risk } - inputs[0][0]
-    println("Best way found in runs: $bestPartOne")
+    // val bestPartOne = searchOptimalPath(inputs, 20_000_000)!!.sumOf { it.risk } - inputs[0][0]
+    // println("Best way found in runs: $bestPartOne")
 
-    val revealed = revealActualCave(inputs)
-    val bestPartTwo = searchOptimalPath(revealed, 20_000_000)!!.sumOf { it.risk } - revealed[0][0]
-    println("Hardmode: Best way found in runs: $bestPartTwo")
+    // 4246
+//    val revealed = revealActualCave(inputs)
+//    val bestPartTwo = searchOptimalPath(revealed, 500_000)
+//    println("Hardmode: Best way found in runs: $bestPartTwo")
 }
 
 fun revealActualCave(incompleteMap: CaveRiskMap): CaveRiskMap {
     val size = incompleteMap.size * 5
 
-    return (0 until size).map{ y ->
+    return (0 until size).map { y ->
         (0 until size).map { x ->
 
             val xShift = x / incompleteMap.size

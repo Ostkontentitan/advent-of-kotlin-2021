@@ -1,3 +1,7 @@
+import day15.CavePosition
+import day15.revealActualCave
+import day15.searchOptimalPath
+import day15.toRiskMap
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -9,25 +13,22 @@ internal class Day15KtTest {
     @Test
     fun `should find the shortest way in example`() = runBlocking {
         val inputs = readInput("testInput15.txt").toRiskMap()
-        val startRisk = inputs[0][0]
-        val path = searchOptimalPath(inputs, 10_000)!!
-        assertEquals(40, path.sumOf { it.risk } - startRisk)
+        val path = searchOptimalPath(inputs, 10_000)
+        assertEquals(40, path)
     }
 
     @Test
     fun `should find the shortest way in extended`() = runBlocking {
         val inputs = readInput("testInput15_extended.txt").toRiskMap()
-        val startRisk = inputs[0][0]
-        val path = searchOptimalPath(inputs, 10_000)!!
-        assertEquals(49, path.sumOf { it.risk } - startRisk)
+        val path = searchOptimalPath(inputs, 10_000)
+        assertEquals(49, path)
     }
 
     @Test
     fun `should find the shortest way in custom example`() = runBlocking {
         val inputs = readInput("testInput15_alt.txt").toRiskMap()
-        val startRisk = inputs[0][0]
-        val path = searchOptimalPath(inputs, 25_000)!!
-        assertEquals(32, path.sumOf { it.risk } - startRisk)
+        val path = searchOptimalPath(inputs, 25_000)
+        assertEquals(32, path)
     }
 
     @Test
@@ -44,7 +45,7 @@ internal class Day15KtTest {
         val inputs = readInput("testInput15.txt").toRiskMap()
 
         val revealed = revealActualCave(inputs)
-        val best = searchOptimalPath(revealed, 30_000)!!.sumOf { it.risk } - revealed[0][0]
+        val best = searchOptimalPath(revealed, 30_000)
 
         assertEquals(315, best)
     }
