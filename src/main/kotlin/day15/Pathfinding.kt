@@ -22,7 +22,8 @@ fun searchOptimalPath(
             bestForPosition = bestForPosition,
             visited = emptyList(),
             currentRisk = 0,
-            knownDeadEnds = knownDeadEnds
+            knownDeadEnds = knownDeadEnds,
+            bestRisk
         )
 
         val newRisk = better?.sumOf { it.risk } ?: Integer.MAX_VALUE
@@ -44,19 +45,18 @@ tailrec fun tryFindBetterPath(
     bestForPosition: Array<Array<Int?>>,
     visited: List<CavePosition>,
     currentRisk: Int,
-    knownDeadEnds: MutableSet<Int>
+    knownDeadEnds: MutableSet<Int>,
+    bestTotalRisk: Int
 ): List<CavePosition>? {
     val updatedVisits = visited + current
     val updatedRisk = currentRisk + current.risk
-
-    bestForPosition[current.y][current.x] = updatedRisk
 
     if (current == destination) {
         return updatedVisits
     }
 
     val visitable = visitablePositionsFrom(current, map).filterNot { candidate ->
-        isCandidateUnworthy(candidate, updatedVisits, updatedRisk, knownDeadEnds, bestForPosition)
+        isCandidateUnworthy(candidate, updatedVisits, updatedRisk, knownDeadEnds, bestForPosition, bestTotalRisk)
     }
 
     if (visitable.isEmpty()) {
@@ -71,7 +71,8 @@ tailrec fun tryFindBetterPath(
         bestForPosition,
         updatedVisits,
         updatedRisk,
-        knownDeadEnds
+        knownDeadEnds,
+        bestTotalRisk
     )
 }
 
@@ -80,28 +81,34 @@ fun isCandidateUnworthy(
     visited: List<CavePosition>,
     currentRisk: Int,
     knownDeadEnds: MutableSet<Int>,
-    bestForPosition: Array<Array<Int?>>
+    bestForPosition: Array<Array<Int?>>,
+    bestTotalRisk: Int
 ): Boolean {
     val candidatePathRisk = currentRisk + candidate.risk
+    if (candidatePathRisk > bestTotalRisk) {
+        return true
+    }
     val knownBest = bestForPosition[candidate.y][candidate.x]
-    val candidateRouteHash = (visited + candidate).hashCode()
     val hasBetterRouteTo = knownBest != null && candidatePathRisk > knownBest
 
     if (!hasBetterRouteTo) {
         bestForPosition[candidate.y][candidate.x] = candidatePathRisk
+    } else {
+        return true
     }
 
-    val hasBeenVisited = visited.contains(candidate)
-    val touchesPath = visited.count { candidate.inProximityTo(it) } > 1
-    val isDeadEnd = knownDeadEnds.contains(candidateRouteHash)
-
-    val isUnworthy = hasBeenVisited || touchesPath || hasBetterRouteTo || isDeadEnd
-
-    if (isUnworthy) {
-        knownDeadEnds.add(candidateRouteHash)
+    if (visited.contains(candidate)) {
+        return true
     }
 
-    return isUnworthy
+    if (visited.count { candidate.inProximityTo(it) } > 1) {
+        return true
+    }
+    if (knownDeadEnds.contains((visited + candidate).hashCode())) {
+        return true
+    }
+
+    return false
 }
 
 fun visitablePositionsFrom(
