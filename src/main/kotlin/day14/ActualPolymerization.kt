@@ -9,13 +9,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
-import readInput
-
-suspend fun puzzlePartOne() {
-    val inputs = readInput(14)
-    val sum = ActualPolymerization().performAndCollectSum(10, inputs)
-    println("Sum after 10 steps: $sum")
-}
 
 class ActualPolymerization {
 

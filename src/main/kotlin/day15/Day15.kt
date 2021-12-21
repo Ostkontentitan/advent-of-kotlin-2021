@@ -2,17 +2,14 @@ package day15
 
 import readInput
 
-fun puzzlePartOne() {
+fun puzzle() {
     val inputs = readInput(15).toRiskMap()
-    val best = searchOptimalPath(inputs, 20_000_000)!!.sumOf { it.risk } - inputs[0][0]
-    println("Best way found in runs: $best")
-}
+    val bestPartOne = searchOptimalPath(inputs, 20_000_000)!!.sumOf { it.risk } - inputs[0][0]
+    println("Best way found in runs: $bestPartOne")
 
-fun puzzlePartTwo() {
-    val inputs = readInput(15).toRiskMap()
     val revealed = revealActualCave(inputs)
-    val best = searchOptimalPath(revealed, 200_000_000)!!.sumOf { it.risk } - revealed[0][0]
-    println("Hardmode: Best way found in runs: $best")
+    val bestPartTwo = searchOptimalPath(revealed, 20_000_000)!!.sumOf { it.risk } - revealed[0][0]
+    println("Hardmode: Best way found in runs: $bestPartTwo")
 }
 
 fun revealActualCave(incompleteMap: CaveRiskMap): CaveRiskMap {

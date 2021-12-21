@@ -1,13 +1,5 @@
 package day14
 
-import readInput
-
-fun puzzlePartTwo() {
-    val inputs = readInput(14)
-    val sum = CountProjection().perform(40, inputs)
-    println("Sum after 40 steps: $sum")
-}
-
 class CountProjection {
     fun perform(steps: Int, inputs: List<String>): Long {
         val instructions = extractInstructionMap(inputs)
