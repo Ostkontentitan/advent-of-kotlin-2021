@@ -73,9 +73,7 @@ suspend fun solvePuzzle(puzzleNumber: Int): Unit = when (puzzleNumber) {
         puzzleDayFifteenPartOne()
         puzzleDayFifteenPartTwo()
     }
-    16 -> {
-        puzzleDaySixteenPartOne()
-    }
+    16 -> day16.puzzle()
     else -> {
         println("Sorry, looks like puzzle number $puzzleNumber is not solved yet. ")
     }
