@@ -4,13 +4,13 @@ import readInput
 
 fun puzzle() {
     val inputs = readInput(15).toRiskMap()
-    val bestPartOne = searchOptimalPath(inputs, 200_000)
-    println("Best way found in runs: $bestPartOne")
+    // val bestPartOne = RecursivePathfinder().searchOptimalPath(inputs)
+    // println("Best way found in runs: $bestPartOne")
 
     // 4246
-    // val revealed = revealActualCave(inputs)
-    // val bestPartTwo = searchOptimalPath(revealed, 5_000_000)
-    // println("Hardmode: Best way found in runs: $bestPartTwo")
+    val revealed = revealActualCave(inputs)
+    val bestPartTwo = BacktrackingPathfinder().searchOptimalPath(revealed)
+    println("Hardmode: Best way found in runs: $bestPartTwo")
 }
 
 fun revealActualCave(incompleteMap: CaveRiskMap): CaveRiskMap {

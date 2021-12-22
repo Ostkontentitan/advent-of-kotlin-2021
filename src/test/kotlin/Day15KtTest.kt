@@ -1,6 +1,7 @@
+import day15.BacktrackingPathfinder
 import day15.CavePosition
+import day15.Pathfinder
 import day15.revealActualCave
-import day15.searchOptimalPath
 import day15.toRiskMap
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -10,24 +11,33 @@ import kotlin.test.assertTrue
 
 internal class Day15KtTest {
 
+    private val pathfinder: Pathfinder = BacktrackingPathfinder()
+
+    @Test
+    fun `should find the shortest way in mini example`() = runBlocking {
+        val inputs = readInput("testInput15_mini.txt").toRiskMap()
+        val path = pathfinder.searchOptimalPath(inputs)
+        assertEquals(7, path)
+    }
+
     @Test
     fun `should find the shortest way in example`() = runBlocking {
         val inputs = readInput("testInput15.txt").toRiskMap()
-        val path = searchOptimalPath(inputs, 10_000)
+        val path = pathfinder.searchOptimalPath(inputs)
         assertEquals(40, path)
     }
 
     @Test
     fun `should find the shortest way in extended`() = runBlocking {
         val inputs = readInput("testInput15_extended.txt").toRiskMap()
-        val path = searchOptimalPath(inputs, 10_000)
+        val path = pathfinder.searchOptimalPath(inputs)
         assertEquals(49, path)
     }
 
     @Test
     fun `should find the shortest way in custom example`() = runBlocking {
         val inputs = readInput("testInput15_alt.txt").toRiskMap()
-        val path = searchOptimalPath(inputs, 25_000)
+        val path = pathfinder.searchOptimalPath(inputs)
         assertEquals(32, path)
     }
 
@@ -45,7 +55,7 @@ internal class Day15KtTest {
         val inputs = readInput("testInput15.txt").toRiskMap()
 
         val revealed = revealActualCave(inputs)
-        val best = searchOptimalPath(revealed, 30_000)
+        val best = pathfinder.searchOptimalPath(revealed)
 
         assertEquals(315, best)
     }
