@@ -10,7 +10,7 @@ fun puzzle() {
     // 4246
     val revealed = revealActualCave(inputs)
     val bestPartTwo = BacktrackingPathfinder().searchOptimalPath(revealed)
-    println("Hardmode: Best way found in runs: $bestPartTwo")
+    println("Hardmode: Best way has risk: $bestPartTwo")
 }
 
 fun revealActualCave(incompleteMap: CaveRiskMap): CaveRiskMap {
