@@ -1,6 +1,6 @@
 import day16.BITSPackage
 import day16.BITSParser
-import day16.Header
+import day16.BITSHeader
 import day16.toBinary
 import kotlinx.coroutines.runBlocking
 import org.junit.Test
@@ -19,7 +19,7 @@ internal class Day16KtTest {
     fun `properly parses type 4 package`() = runBlocking {
         val binary = "110100101111111000101000"
         val first = BITSParser(binary).parsePackage()
-        assertEquals(BITSPackage.LiteralValue(Header(6, 4), 2021), first)
+        assertEquals(BITSPackage.LiteralValue(BITSHeader(6, 4), 2021), first)
     }
 
     @Test
@@ -140,6 +140,12 @@ internal class Day16KtTest {
         val hex = "A0016C880162017C3686B18A3D4780"
         val bitsPackage = BITSParser(toBinary(hex)).parsePackage()
         assertEquals(54, bitsPackage.value)
+    }
+
+    @Test
+    fun `long and int conversion return same result`() = runBlocking {
+        val hex = "1010101100101110001101001111"
+        assertEquals(hex.toInt(2).toLong(), hex.toLong(2))
     }
 
     @Test

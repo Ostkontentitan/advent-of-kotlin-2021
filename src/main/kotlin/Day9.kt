@@ -15,21 +15,20 @@ fun puzzleDayNinePartTwo() {
     println("Multiplied basin size is: $sizesMultiplied")
 }
 
-fun detectBasinSizes(inputs: List<List<Int>>, lowPoints: List<FloorTile>): List<Int> =
-    lowPoints.map { lowPoint ->
-        var surroundings = getSurroundings(inputs, lowPoint)
-        val results = (listOf(lowPoint) + surroundings).toMutableSet()
+fun detectBasinSizes(inputs: List<List<Int>>, lowPoints: List<FloorTile>): List<Int> = lowPoints.map { lowPoint ->
+    var surroundings = getSurroundings(inputs, lowPoint)
+    val results = (listOf(lowPoint) + surroundings).toMutableSet()
 
-        while (surroundings.isNotEmpty()) {
-            surroundings = surroundings.flatMap { tile ->
-                getSurroundings(inputs, tile)
-            }.filterNot { results.contains(it) }.toSet()
-            results.addAll(surroundings)
-            println("new surroundings addded: ${surroundings.size} - resultsize: ${results.size}")
-        }
-
-        results.size
+    while (surroundings.isNotEmpty()) {
+        surroundings = surroundings.flatMap { tile ->
+            getSurroundings(inputs, tile)
+        }.filterNot { results.contains(it) }.toSet()
+        results.addAll(surroundings)
+        println("new surroundings addded: ${surroundings.size} - resultsize: ${results.size}")
     }
+
+    results.size
+}
 
 fun getSurroundings(inputs: List<List<Int>>, tile: FloorTile): Set<FloorTile> {
     val x = tile.posX

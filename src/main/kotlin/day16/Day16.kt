@@ -4,7 +4,8 @@ import readInput
 
 fun puzzle() {
     val input = readInput(16).first()
-    val bitsPackage = BITSParser(toBinary(input)).parsePackage()
+    val parser = BITSParser(toBinary(input))
+    val bitsPackage = parser.parsePackage()
     println("Package sum is: ${bitsPackage.versionSum}")
     println("Package value is: ${bitsPackage.value}")
 }
